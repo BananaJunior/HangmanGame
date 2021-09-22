@@ -109,4 +109,4 @@ class HangManGame:
         return HangManGame.SUCCESS
 
     def guessed_letters(self):
-        return ', '.join(self.letters_guessed)
+        return ' '.join(self.letters_guessed)

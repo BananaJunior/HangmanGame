@@ -1,4 +1,3 @@
-from tkinter import *
 from tkinter import messagebox
 
 from PIL import ImageTk, Image
@@ -6,12 +5,12 @@ from hangman_game import *
 
 
 class HangmanWindow:
+    DEF_FONT = ("Ariel", 16)
     INDEX_REQUEST = 1
     CUSTOM_REQUEST = 2
 
     CANVAS_WIDTH = 300
     CANVAD_HEIGHT = CANVAS_WIDTH
-
 
     HANGMAN_IMAGES = {
         0: Image.open(".\\files\\images\\0.png"),
@@ -29,50 +28,48 @@ class HangmanWindow:
         if self.input_popup == None or self.popup_input_field == None:
             return
         input_text = self.popup_input_field.get()
-        if len(input_text) > 0:
-            self.input_popup.destroy()
-            self.input_popup = None
-            self.popup_input_field = None
-            if self.input_popup_type == 1:
-                if input_text.isnumeric() and int(input_text) > 0:
-                    self.hangman_game.init_game(hidden_index=int(input_text))
-                else:
-                    messagebox.showerror(title="Input Error", message="Please enter a number larger than zero.")
-            elif self.input_popup_type == 2:
-                if input_text.isalpha():
-                    input_text = input_text.lower()
-                    self.hangman_game.init_game(hidden_word=input_text)
-                else:
-                    messagebox.showerror(title="Input Error", message="Please enter a word using only letters and no spaces")
+        if len(input_text) <= 0:
+            return
+
+        self.input_popup.destroy()
+        self.input_popup = None
+        self.popup_input_field = None
+
+        if self.input_popup_type == HangmanWindow.INDEX_REQUEST:
+            if input_text.isnumeric() and int(input_text) > 0:
+                self.hangman_game.init_game(hidden_index=int(input_text))
+            else:
+                messagebox.showerror(title="Input Error", message="Please enter a number larger than zero.")
+        elif self.input_popup_type == HangmanWindow.INDEX_REQUEST:
+            if input_text.isalpha():
+                input_text = input_text.lower()
+                self.hangman_game.init_game(hidden_word=input_text)
             else:
                 messagebox.showerror(title="Input Error",
-                                     message="Unknown input request", font=("Ariel", 16))
+                                     message="Please enter a word using only letters and no spaces")
+        else:
+            messagebox.showerror(title="Input Error", message="Unknown input request", font=HangmanWindow.DEF_FONT)
         self.update_window()
-
-
 
     def new_game_input_popup(self, current_input_type=0):
         label_text = "Unkown input request"
-        if current_input_type == 1:
-            self.input_popup_type = 1
+        if current_input_type == HangmanWindow.INDEX_REQUEST:
             label_text = "Please enter the dsired index of the word in the file that you want to play: "
-        elif current_input_type == 2:
-            self.input_popup_type = 2
+        elif current_input_type == HangmanWindow.CUSTOM_REQUEST:
             label_text = "Please enter the word you want to play: "
         else:
-            messagebox.showerror(title="Input Error",
-                                 message="Unknown input request", font=("Ariel", 16))
+            messagebox.showerror(title="Input Error", message="Unknown input request", font=HangmanWindow.DEF_FONT)
             return
-        self.input_popup_type
+
+        self.input_popup_type = current_input_type
         self.input_popup = Toplevel(self.window)
         self.input_popup.title("Input Request")
-        label = Label(self.input_popup, text=label_text, font=("Ariel", 16))
+        label = Label(self.input_popup, text=label_text, font=HangmanWindow.DEF_FONT)
         label.pack()
-        self.popup_input_field = Entry(self.input_popup, font=("Ariel", 16))
+        self.popup_input_field = Entry(self.input_popup, font=HangmanWindow.DEF_FONT)
         self.popup_input_field.pack()
-        button = Button(self.input_popup, text="Submit", font=("Ariel", 16), command=self.get_input_from_popup)
+        button = Button(self.input_popup, text="Submit", font=HangmanWindow.DEF_FONT, command=self.get_input_from_popup)
         button.pack()
-
 
     def update_window(self):
         self.missing_word_text.set(self.hangman_game.show_hidden_word())
@@ -120,18 +117,16 @@ class HangmanWindow:
         self.guessed_letters_text = StringVar()
         self.canvas = Canvas(self.window, width=HangmanWindow.CANVAS_WIDTH, height=HangmanWindow.CANVAD_HEIGHT)
 
-        self.title = Label(self.window, text="Hangman", width=15, font=("Courier", 30))
-        self.missing_word = Label(self.window, textvariable=self.missing_word_text,
-                                  font=("Ariel", 15))
-        self.guessed_letters_title = Label(self.window, text="Letters you already guessed: ",
-                                     font=("Ariel", 15))
-        self.guessed_letters = Label(self.window, textvariable=self.guessed_letters_text,
-                                     font=("Ariel", 15))
+        self.title = Label(self.window, text="Hangman", font=("Ariel", 30))
+        self.missing_word = Label(self.window, textvariable=self.missing_word_text, font=("Ariel", 15))
+        self.guessed_letters_title = Label(self.window, text="Letters you already guessed: ", font=("Ariel", 15))
+        self.guessed_letters = Label(self.window, textvariable=self.guessed_letters_text, font=("Ariel", 15))
         self.input_field = Entry(self.window, font=("Ariel", 16))
         self.input_button = Button(self.window, text="enter", command=self.input_action, font=("Ariel", 16))
-        self.random_new_game_button = Button(self.window, text="Random new game", command=self.new_random_game_action, font=("Ariel", 12))
-        self.indexed_new_game_button = Button(self.window, text="Index new game", command=self.new_indexed_game_action,
+        self.random_new_game_button = Button(self.window, text="Random new game", command=self.new_random_game_action,
                                              font=("Ariel", 12))
+        self.indexed_new_game_button = Button(self.window, text="Index new game", command=self.new_indexed_game_action,
+                                              font=("Ariel", 12))
         self.custom_new_game_button = Button(self.window, text="Custuom new game", command=self.new_custom_game_action,
                                              font=("Ariel", 12))
 
