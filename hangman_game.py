@@ -45,7 +45,7 @@ class HangManGame:
         self.is_game_running = True
 
     def choose_random_word():
-        file = open(FILE_PATH, "r")
+        file = open(HangManGame.FILE_PATH, "r")
         strings = file.read().split(' ')
         return strings[random.randrange(0, len(strings) - 1)]
 

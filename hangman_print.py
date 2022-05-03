@@ -1,5 +1,8 @@
 # This a finished hangman game that works entirely in the command line.
 
+from random import randrange
+
+
 HANGMAN_ASCII_ART = """  _    _                                         
  | |  | |                                        
  | |__| | __ _ _ __   __ _ _ __ ___   __ _ _ __  
@@ -18,17 +21,29 @@ HANGMAN_PHOTOS = {
     5: "x-------x\n|       |\n|       0\n|      /|\\\n|      /\n|",
     6: "x-------x\n|       |\n|       0\n|      /|\\\n|      / \\\n|"
 }
-
 MAX_TRIES = 6
+DEFAULT_FILE_PATH = 'files\words.txt'
 
 
-def choose_word(file_path, index):
+def choose_input_word():
+    file_path = input(
+        "Please enter the path where your words file is: ")
+    file = open(file_path, "r")
+    strings = file.read().split(' ')
+    print(strings)
+    print("Indecies from 1 to " + str(len(strings)))
+    index = int(
+        input("Please enter the index of the word inside the file, from the indecies above:"))
+    return strings[index - 1]
+
+
+def choose_random_word():
+    file_path = DEFAULT_FILE_PATH
     file = open(file_path, "r")
     strings = file.read().split(' ')
     words_amount = len(set(strings))
-    print(strings)
-    res = (words_amount, strings[(index - 1) % words_amount])
-    return res
+    index = randrange(0, words_amount-1)
+    return strings[index]
 
 
 def show_hidden_word(hidden_word, old_letters_guessed):
@@ -75,14 +90,11 @@ def try_update_letter_guessed(letter_guessed, old_letters_guessed):
 
 def print_open_screen():
     print(HANGMAN_ASCII_ART)
-    print(MAX_TRIES)
 
 
 print_open_screen()
-current_file_path = input("Please enter the path where your words file is: ")
-current_index = int(input("Please enter the index of the word inside the file: "))
-current_hidden_word = choose_word(current_file_path, current_index)[1]
 
+current_hidden_word = choose_random_word()
 triedLetters = []
 currentTries = 0
 won = False
@@ -91,6 +103,7 @@ print(HANGMAN_PHOTOS[currentTries])
 print(show_hidden_word(current_hidden_word, triedLetters))
 
 while currentTries < MAX_TRIES and not won:
+    print('You have ' + str(MAX_TRIES - currentTries) + ' tries')
     letter = input("Please enter a letter: ")
     if try_update_letter_guessed(letter, triedLetters):
         print(show_hidden_word(current_hidden_word, triedLetters))
@@ -102,6 +115,6 @@ while currentTries < MAX_TRIES and not won:
             won = check_win(current_hidden_word, triedLetters)
 
 if won:
-    print("WIN")
+    print("You won!")
 else:
-    print("LOSE")
+    print("You lost. The word was " + current_hidden_word)

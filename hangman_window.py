@@ -1,4 +1,6 @@
+from tkinter import *
 from tkinter import messagebox
+
 
 from PIL import ImageTk, Image
 from hangman_game import *
@@ -40,7 +42,7 @@ class HangmanWindow:
                 self.hangman_game.init_game(hidden_index=int(input_text))
             else:
                 messagebox.showerror(title="Input Error", message="Please enter a number larger than zero.")
-        elif self.input_popup_type == HangmanWindow.INDEX_REQUEST:
+        elif self.input_popup_type == HangmanWindow.CUSTOM_REQUEST:
             if input_text.isalpha():
                 input_text = input_text.lower()
                 self.hangman_game.init_game(hidden_word=input_text)
